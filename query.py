@@ -5,36 +5,37 @@ MAXBYTE = 3000000
 
 
 class NParser(HTMLParser):
-	parsedData = []
-	tagRemain = 0
-	tagWeWant = ["p", "title", "div"]
+	_parsedData = ""
+	_tagRemain = 0
+	_tagWeWant = ["p", "title"]
 
 	def handle_starttag(self, tag, attrs):
-		#self.parsedData.append(("s", tag))
-		#print("start:", tag)
-		if (tag in self.tagWeWant):
-			self.tagRemain = self.tagRemain + 1
-		#print(self.tagRemain)
+		if (tag in self._tagWeWant):
+			self._tagRemain = self._tagRemain + 1
 	
 	def handle_endtag(self, tag):
-		#self.parsedData.append(("e", tag))
-		#print("end:", tag);
-		if (tag in self.tagWeWant):
-			self.tagRemain = self.tagRemain - 1
-		#print(self.tagRemain)
+		if (tag in self._tagWeWant):
+			self._tagRemain = self._tagRemain - 1
 	
 	def handle_data(self, data):
-		#self.parsedData.append(("d", data))
-		#print("data:", data);
-
-		if (self.tagRemain != 0):
+		if (self._tagRemain != 0):
+			#return if data is javascript
 			if ("script" in self.get_starttag_text()):
 				return
+			#replace special char
+			replace = [b'\n', b'\r', b'\t', b'\xc2\xa0']
+			byte = str.encode(data)
+			for r in replace:
+				byte = byte.replace(r, b' ')
+			data = byte.decode("utf-8")
+			#title can have a high weight
 			if ("title" in self.get_starttag_text()):
-				print(data)
+				#do something
 				return
-			print(data)
-			#print(self.get_starttag_text())
+			self._parsedData = self._parsedData + data
+	
+	def getParsedData(self):
+		return self._parsedData.replace(" ", "")
 
 
 def getHTML(url):
@@ -44,8 +45,8 @@ def getHTML(url):
 def parseHTML(data):
 	parser = NParser()
 	parser.feed(data)
-	parsedData = parser.parsedData
-
+	parsedData = parser.getParsedData()
+	print(parsedData)
 
 
 def getQuery(url):
@@ -56,7 +57,11 @@ def getQuery(url):
 	#return list
 
 if __name__ == '__main__':
-	#getQuery("http://hsing16.pixnet.net/blog/post/33292894")
+	#JP food
+	getQuery("http://hsing16.pixnet.net/blog/post/33292894")
+	#steak
 	#getQuery("http://hsing16.pixnet.net/blog/post/32270925")
+	#make notebook
 	#getQuery("http://travelmous2013.pixnet.net/blog/post/411878827")
+	#for testing other webpage
 	#getQuery("https://www.dcard.tw/f")

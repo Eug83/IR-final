@@ -1,9 +1,9 @@
 import urllib.request
+import operator
+import unicodedata
 from html.parser import HTMLParser
 
-MAXBYTE = 3000000
-
-
+#Nick's Parser
 class NParser(HTMLParser):
 	_parsedData = ""
 	_tagRemain = 0
@@ -33,34 +33,112 @@ class NParser(HTMLParser):
 				#do something
 				return
 			self._parsedData = self._parsedData + data
+
+	def isChinese(self, word):
+		return "CJK" in unicodedata.name(word)
+
+	def isAlpha(self, word):
+		return "LATIN" in unicodedata.name(word)
+
+	def isDigit(self, word):
+		return "DIGIT" in unicodedata.name(word)
 	
 	def getParsedData(self):
-		return self._parsedData.replace(" ", "")
+		parsedData = self._parsedData;
+		#remove punc
+		for word in parsedData:
+			if (not (self.isChinese(word) or 
+					self.isDigit(word) or self.isAlpha(word))):
+				parsedData = parsedData.replace(word, " ")
+		#print(parsedData)
+		return parsedData
 
+MAXBYTE = 3000000
+content = ""
+index = 0
+parser = NParser()
 
 def getHTML(url):
 	webPage = urllib.request.urlopen(url)
 	return webPage.read(MAXBYTE).decode("utf-8")
 
 def parseHTML(data):
-	parser = NParser()
+	global parser
 	parser.feed(data)
-	parsedData = parser.getParsedData()
-	print(parsedData)
+	return parser.getParsedData()
 
+#get next word from content
+def getWord():
+	global parser, content, index
+	if (index >= len(content)):
+		return ""
+	word = content[index]
+	#ignore space
+	while word == " ":
+		index = index + 1
+		if (index >= len(content)):
+			return ""
+		word = content[index]
+	#create word
+	if (parser.isChinese(word)):
+		index = index + 1
+		return word
+	else:	#English or Digit
+		index = index + 1
+		if index >= len(content):
+			return word
+		char = content[index]
+		while (parser.isAlpha(char) or parser.isDigit(char)):
+			word = word + char
+			index = index + 1
+			if index >= len(content):
+				return word
+			char = content[index]
+		return word
 
-def getQuery(url):
+def countWord(isUni):
+	global content, index
+	wordCount = {}
+	last = len(content) if isUni else len(content) - 1
+	while index < last:
+		word = getWord()
+		if not isUni:
+			word2 = getWord()
+			#TODO: notice if word2 is English
+			word = word + word2
+		#count word
+		if (word in wordCount):
+			wordCount[word] = wordCount[word] + 1
+		else:
+			wordCount[word] = 1
+	return sorted(wordCount.items(), key = operator.itemgetter(1), reverse = True)
+
+def getQuery(url, isUni, thres):
+	global content
 	data = getHTML(url)
 	content = parseHTML(data)
-	#count(content)
+	sortedWordCount = countWord(isUni)
+	for i in range(0, thres):
+		(word, count) = sortedWordCount[i]
+		print("word:", word, "count:", count)
 	#list = makeQueryList()
 	#return list
 
 if __name__ == '__main__':
+	'''
+	Usage:
+		getQuery(url, isUnigram, top)
+	Parameters:
+		url(string): url of the web page
+		isUnigram(boolean): true returns unigram query, bigram otherwise
+		top(int): number of key words to return
+	Return:
+		A list of key words in string
+	'''
 	#JP food
-	getQuery("http://hsing16.pixnet.net/blog/post/33292894")
+	#getQuery("http://hsing16.pixnet.net/blog/post/33292894", False, 20)
 	#steak
-	#getQuery("http://hsing16.pixnet.net/blog/post/32270925")
+	getQuery("http://hsing16.pixnet.net/blog/post/32270925", False, 20)
 	#make notebook
 	#getQuery("http://travelmous2013.pixnet.net/blog/post/411878827")
 	#for testing other webpage

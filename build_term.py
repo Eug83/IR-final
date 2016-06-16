@@ -108,7 +108,7 @@ def write_file():
 
 	with open(invIndex,'w',encoding='utf8') as fp:
 		for term in term_list:
-			fp.write('%d %d\n' % (term_dict[term],len(invInd_dict[term])))
+			fp.write('%d -1 %d\n' % (term_dict[term],len(invInd_dict[term])))
 			for key in invInd_dict[term]:
 				fp.write('%d %d\n' % (file_dict[key],invInd_dict[term][key]))
 

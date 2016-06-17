@@ -7,6 +7,7 @@
 #define MAXFILENAME 1000
 #define MAXWORDNUM 30000
 #define MAXWORDLEN 20
+#define MAXTERMLEN 2*MAXWORDLEN+1
 #define MAXFILENUM 30000
 #define MAXTERMNUM 1100000 // this should be checked
 
@@ -24,7 +25,7 @@ struct cmp_str{
 char words[MAXWORDNUM][MAXWORDLEN];			// wordID => word string
 int maxFreq[MAXFILENUM];					// fileID => maxFreq
 map<int, int> wordCounts[MAXTERMNUM];		// fileID => wordCount
-char terms[MAXTERMNUM][2 * MAXWORDLEN + 1];	// termID => term string
+char terms[MAXTERMNUM][MAXTERMLEN];			// termID => term string
 map<char*, map<int, int>*, cmp_str> inverts;// term string => wordCounts map
 char files[MAXFILENUM][MAXFILENAME]; 		// fileID => filename
 
@@ -63,8 +64,8 @@ void createInverts(){
 				//printf("fileID = %d, count = %d\n", fileID, count);
 			}
 			continue;
-		}*/
-
+		}
+		*/
 		// create wordCounts
 		for (int i = 0; i < fileNum; i++){
 			fscanf(f, "%d %d", &fileID, &count);

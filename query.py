@@ -103,8 +103,12 @@ def countWord(isUni):
 		word = getWord()
 		if not isUni:
 			word2 = getWord()
-			# TODO: notice if word2 is English
-			word = word + word2
+			if len(word2) == 0:
+				pass
+			else:
+				# add sapce between word and word2 if word2 is English or Digit
+				word = word + word2 if (parser.isChinese(word2[0])) \
+								else word + " " + word2
 		# count word
 		if (word in wordCount):
 			wordCount[word] = wordCount[word] + 1
@@ -117,6 +121,7 @@ def getQuery(url, isUni, thres):
 	data = getHTML(url)
 	content = parseHTML(data)
 	sortedWordCount = countWord(isUni)
+	thres = len(sortedWordCount) if thres > len(sortedWordCount) else thres
 	for i in range(0, thres):
 		(word, count) = sortedWordCount[i]
 		print("word:", word, "count:", count)

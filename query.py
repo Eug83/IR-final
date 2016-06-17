@@ -3,7 +3,7 @@ import operator
 import unicodedata
 from html.parser import HTMLParser
 
-#Nick's Parser
+# Nick's Parser
 class NParser(HTMLParser):
 	_parsedData = ""
 	_tagRemain = 0
@@ -19,18 +19,18 @@ class NParser(HTMLParser):
 	
 	def handle_data(self, data):
 		if (self._tagRemain != 0):
-			#return if data is javascript
+			# return if data is javascript
 			if ("script" in self.get_starttag_text()):
 				return
-			#replace special char
+			# replace special char
 			replace = [b'\n', b'\r', b'\t', b'\xc2\xa0']
 			byte = str.encode(data)
 			for r in replace:
 				byte = byte.replace(r, b' ')
 			data = byte.decode("utf-8")
-			#title can have a high weight
+			# title can have a high weight
 			if ("title" in self.get_starttag_text()):
-				#do something
+				# do something
 				return
 			self._parsedData = self._parsedData + data
 
@@ -45,12 +45,11 @@ class NParser(HTMLParser):
 	
 	def getParsedData(self):
 		parsedData = self._parsedData;
-		#remove punc
+		# remove punc
 		for word in parsedData:
 			if (not (self.isChinese(word) or 
 					self.isDigit(word) or self.isAlpha(word))):
 				parsedData = parsedData.replace(word, " ")
-		#print(parsedData)
 		return parsedData
 
 MAXBYTE = 3000000
@@ -67,23 +66,23 @@ def parseHTML(data):
 	parser.feed(data)
 	return parser.getParsedData()
 
-#get next word from content
+# get next word from content
 def getWord():
 	global parser, content, index
 	if (index >= len(content)):
 		return ""
 	word = content[index]
-	#ignore space
+	# ignore space
 	while word == " ":
 		index = index + 1
 		if (index >= len(content)):
 			return ""
 		word = content[index]
-	#create word
+	# create word
 	if (parser.isChinese(word)):
 		index = index + 1
 		return word
-	else:	#English or Digit
+	else:	# English or Digit
 		index = index + 1
 		if index >= len(content):
 			return word
@@ -104,9 +103,9 @@ def countWord(isUni):
 		word = getWord()
 		if not isUni:
 			word2 = getWord()
-			#TODO: notice if word2 is English
+			# TODO: notice if word2 is English
 			word = word + word2
-		#count word
+		# count word
 		if (word in wordCount):
 			wordCount[word] = wordCount[word] + 1
 		else:
@@ -121,8 +120,8 @@ def getQuery(url, isUni, thres):
 	for i in range(0, thres):
 		(word, count) = sortedWordCount[i]
 		print("word:", word, "count:", count)
-	#list = makeQueryList()
-	#return list
+	# list = makeQueryList()
+	# return list
 
 if __name__ == '__main__':
 	'''
@@ -135,11 +134,11 @@ if __name__ == '__main__':
 	Return:
 		A list of key words in string
 	'''
-	#JP food
+	# JP food
 	#getQuery("http://hsing16.pixnet.net/blog/post/33292894", False, 20)
-	#steak
+	# steak
 	getQuery("http://hsing16.pixnet.net/blog/post/32270925", False, 20)
-	#make notebook
+	# make notebook
 	#getQuery("http://travelmous2013.pixnet.net/blog/post/411878827")
-	#for testing other webpage
+	# for testing other webpage
 	#getQuery("https://www.dcard.tw/f")

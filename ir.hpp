@@ -1,3 +1,8 @@
+#include <vector>
+
+vector<int> candidates;
+
+
 /*
 #include <stdio.h>
 #include <set>
@@ -6,7 +11,6 @@
 
 using namespace std;
 int feedback;
-vector<int> candidates;
 vector<double>::iterator vit;
 int candidateNum;
 Query q;
@@ -26,13 +30,14 @@ void printWeight(double* w){
 		printf("%f ", w[i]);
 	puts("");
 }
-void candidatesOr(map<int, int>& m){
+*/
+void candidatesOr(map<int, int>* wordCount){
 	map<int, int>::iterator mit;
 	vector<int>::iterator vit, tit;
 	vector<int> temp;
 	vit = candidates.begin();
-	mit = m.begin();
-	while (vit != candidates.end() && mit != m.end()){
+	mit = wordCount->begin();
+	while (vit != candidates.end() && mit != wordCount->end()){
 		if (mit->first > *vit){
 			temp.push_back(*vit);
 			vit++;
@@ -47,27 +52,24 @@ void candidatesOr(map<int, int>& m){
 			mit++;
 		}
 	}
-	for (; mit != m.end(); mit++)
+	for (; mit != wordCount->end(); mit++)
 		temp.push_back(mit->first);
 	for (; vit != candidates.end(); vit++)
 		temp.push_back(*vit);
 	candidates = temp;
 }
 
-void findCandidate(Query q){
+void findCandidate(){
+	map<char*, map<int, int>*, cmp_str>::iterator it;
 	candidates.clear();
-	int termNum = q.termNum;
-	Data d;
-	for (int i = 0; i < termNum; i++){
-		it = inverts.find(q.terms[i]);
+	for (int i = 0; i < queryTermNum; i++){
+		it = inverts.find(queryTerms[i]);
 		if (it == inverts.end())
 			continue;
-		d = *(it->second);
-		candidatesOr(d.wordCount);
+		candidatesOr(it->second);
 	}
-	//printSet(candidates);
 }
-
+/*
 double TF(Data* d, int fileID){
 	map<int, int>::iterator imit = d->wordCount.find(fileID);
 	if (imit == d->wordCount.end())
@@ -184,10 +186,10 @@ void writeResult(set<pair<double, int> >& r){
 			break;
 	}
 }
-
-void search(Query query){
-	q = query;
-	findCandidate(q);
+*/
+void search(){
+	findCandidate();
+	/*
 	candidateNum = candidates.size();
 	int i = 0;
 	double queryW[q.termNum];//how to calc this??
@@ -208,6 +210,5 @@ void search(Query query){
 
 	//printResult(result);
 	writeResult(result);
-	return;
+	*/
 }
-*/

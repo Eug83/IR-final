@@ -82,12 +82,6 @@ void createInverts(){
 		inverts.insert(item);
 		termNum++;
 	}
-	/*
-	map<char*, map<int, int>*, cmp_str>::iterator it;
-	for (it = inverts.begin(); it != inverts.end(); it++)
-		printf("%s\n", it->first);
-	printf("%d\n", inverts.size());
-	*/
 }
 
 void createFileName(){

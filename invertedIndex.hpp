@@ -47,25 +47,6 @@ void createInverts(){
 		maxFreq[i] = 0;
 	// create inverted index
 	while (fscanf(f, "%d %d %d", &vID1, &vID2, &fileNum) != EOF){
-		/*
-		// No English or number
-		if (vID1 < 5391 || vID1 > 12276 || vID2 < 5391 || vID2 > 12276){
-			for (int i = 0; i < fileNum; i++){
-				fscanf(f, "%d %d", &fileID, &count);
-				//printf("fileID = %d, count = %d\n", fileID, count);
-			}
-			continue;
-		}
-		// eat data with English or number
-		if (isalpha(words[vID1][0]) || isdigit(words[vID1][0])
-			|| isalpha(words[vID2][0]) || isdigit(words[vID2][0])){
-			for (int i = 0; i < fileNum; i++){
-				fscanf(f, "%d %d", &fileID, &count);
-				//printf("fileID = %d, count = %d\n", fileID, count);
-			}
-			continue;
-		}
-		*/
 		// create wordCounts
 		for (int i = 0; i < fileNum; i++){
 			fscanf(f, "%d %d", &fileID, &count);
@@ -75,8 +56,8 @@ void createInverts(){
 		}
 		// create terms
 		strncpy(terms[termNum], words[vID1], strlen(words[vID1]));
-		// TODO: vID2 is English?
 		if (vID2 != -1)
+		// TODO: vID2 is English?
 			strncat(terms[termNum], words[vID2], strlen(words[vID2]));
 
 		item = make_pair(terms[termNum], &wordCounts[termNum]);

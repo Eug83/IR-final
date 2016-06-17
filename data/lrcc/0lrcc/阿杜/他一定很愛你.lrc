@@ -1,0 +1,132 @@
+<html><head> 
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta http-equiv="Expires" content="Tue, 1 Aug 1996 14:25:27 GMT"> 
+<meta http-equiv="Expires" CONTENT="0"> 
+<meta http-equiv="Cache-Control" CONTENT="no-cache"> 
+<meta http-equiv="Pragma" CONTENT="no-cache">  
+
+<script language="JavaScript">
+<!--
+
+function SymError()
+{
+  return true;
+}
+
+window.onerror = SymError;
+
+//-->
+</script>
+
+<script language='JavaScript' src='http://211.161.45.9:3002/js/acslogin.js' type='text/javascript'></script>	  
+<title>User Authentication</title></head> 
+<body>
+
+<script language='JavaScript' >			
+function check_input() 					
+{													
+	 with (document.authform) 				
+	 {													
+		if ( uact_status.value==1 )   { 		
+			return false; 							
+		}												
+		if ( uid.value.length>64 )   { 		
+			alert ("ノめ絏筁 !"); 						
+			uid.focus();							
+			return false; 							
+		}												
+		if ( upwd.value.length>64 )   { 	
+			alert ("ノめ盞絏筁 !");						
+			upwd.focus();							
+			return false; 							
+		}												
+		if ( uid.value=="" ||  uid.value.charAt(0) == " " ||  uid.value.charAt(0) == "#" )   { 		
+			alert ("ノめ絏礚 !"); 						
+			uid.focus();							
+			return false; 							
+		}												
+		if ( upwd.value=="" || upwd.value.charAt(0) == " " || upwd.value.charAt(0) == "#" )   { 	
+			alert ("ノめ盞絏礚 !");						
+			upwd.focus();							
+			return false; 							
+		}												
+		if ( remuser.checked )					
+		{												
+			SetCookie("uid", uid.value);       	
+			SetCookie("upwd", upwd.value);	
+		}												
+		else {										
+			SetCookie("uid", "");       	
+			SetCookie("upwd", "");	
+			SetCookie("sid", "0");		
+		}												
+		uact_status.value=1;					
+	 }													
+
+	location.replace("www.minilyrics.com"); 			
+	return true; 									
+}													
+
+function selectVPN() 						
+{													
+	 with (document.authform) 				
+	 {													
+	 	if ( vpn.checked )						
+	 		vpn.value=1;							
+	 	else											
+	 		vpn.value=0;							
+	 }													
+}													
+</script>											
+
+
+<center> 										
+
+<img src='http://www.bjgwbn.net.cn/image/logo.gif' alt='Page Title'><br><br> 
+
+<form name='authform' action='http://211.161.45.9:3002/cgi-bin/authcgi_login' method='post'  onsubmit='return check_input();'> 
+<input type='hidden' name='sip' value='211.161.45.9'> 
+<input type='hidden' name='uip' value='211.161.34.133'> 
+<input type='hidden' name='url' value='www.minilyrics.com'> 
+<input type='hidden' name='uact' value='login'>
+<input type='hidden' name='uact_status' value='0'>
+<table width='80%' border='0'> 
+<tr><td align=right width='35%'>ノめ絏 :</td><td><input type='text' name='uid' size='32' value='' maxlength='32'></td></tr> 
+<tr><td align=right width='35%'>ノめ盞絏 :</td><td><input type='password' name='upwd' size='32' value='' maxlength='32'></td></tr> 
+<tr><td colspan=2 align=center><input type='checkbox' name='remuser' value='1'> <font size='2'> 癘и姐腹</td></tr> 
+<tr><td colspan=2 align=center><input type='hidden' name='vpn' value='0'></td></tr> 
+<tr><td colspan=2 align=center><br><input type='submit' name='go' value='ノめ祅' ></td></tr> 
+</table> 
+
+<input type='hidden' name='btype' value='0'> 
+<script language='JavaScript' > 								
+
+	var ap_name = navigator.appName.toUpperCase();  		
+	var ap_vinfo = navigator.appVersion;  							
+	var ap_ver = parseFloat(ap_vinfo.substring( 0, ap_vinfo.indexOf('(')) );	
+
+	if( ap_name.indexOf("NETSCAPE")>=0 ) 
+		document.write("<layer name='ad' src='http://www.bjgwbn.net.cn/wenzi.htm' align='center' height='200%' width='100%' visibility='show'></layer>"); 
+	else 													
+		document.write("<iframe name='ad' src='http://www.bjgwbn.net.cn/wenzi.htm' align='center' valign='top'  height='200%'  width='100%' scrolling='auto' frameborder='0' ></iframe>"); 
+ 														
+	acs_uid=GetCookie("uid"); 	
+	acs_upwd=GetCookie("upwd"); 	
+	if ( acs_uid!="" && acs_uid!=null ) 	
+	{													
+		document.authform.uid.value=acs_uid; 		
+		document.authform.remuser.checked=true; 	
+	}																	
+	if ( acs_upwd!="" && acs_upwd!=null  ) 		
+	{													
+		document.authform.upwd.value=acs_upwd; 	
+
+		document.authform.remuser.checked=true; 	
+	}																	
+</script>	
+
+</form> 	
+</center>	
+</body> 	
+</html> 	
+

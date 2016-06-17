@@ -21,7 +21,7 @@ int main(int argc, char** argv){
 			i++;
 		}
 	createInvertedIndex();
-	//readQueryFile();
-	//search();
+	readQueryFile();
+	search();
 	return 0;
 }

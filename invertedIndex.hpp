@@ -46,7 +46,6 @@ void createInverts(){
 		maxFreq[i] = 0;
 	// create inverted index
 	while (fscanf(f, "%d %d %d", &vID1, &vID2, &fileNum) != EOF){
-		//printf("%d, %d, %d\n", vID1, vID2, fileNum);
 		/*
 		// No English or number
 		if (vID1 < 5391 || vID1 > 12276 || vID2 < 5391 || vID2 > 12276){
@@ -69,7 +68,6 @@ void createInverts(){
 		// create wordCounts
 		for (int i = 0; i < fileNum; i++){
 			fscanf(f, "%d %d", &fileID, &count);
-			//printf("fileID = %d, count = %d\n", fileID, count);
 			maxFreq[fileID] = count > maxFreq[fileID] ? count : maxFreq[fileID];
 			p = make_pair(fileID, count);
 			wordCounts[termNum].insert(p);
@@ -80,7 +78,6 @@ void createInverts(){
 		if (vID2 != -1)
 			strncat(terms[termNum], words[vID2], strlen(words[vID2]));
 
-		//printf("%s\n", terms[termNum]);
 		item = make_pair(terms[termNum], &wordCounts[termNum]);
 		inverts.insert(item);
 		termNum++;
@@ -97,16 +94,13 @@ void createFileName(){
 	FILE* f = fopen(fileListFilename, "r");
 	int fileNum = 0;
 	int len;
-	while (fgets(files[fileNum], MAXFILENAME, f) != NULL){
-		// remove \n
-		len = strlen(files[fileNum]);
-		files[fileNum][len - 1] = '\0';
+	while (fgets(files[fileNum], MAXFILENAME, f) != NULL)
 		fileNum++;
+	// remove '\n'
+	for (int i = 0; i < fileNum - 1; i++) {
+		len = strlen(files[i]);
+		files[i][len - 1] = '\0';
 	}
-	// fill 'c'
-	len = strlen(files[fileNum - 1]);
-	files[fileNum - 1][len] = 'c';
-	files[fileNum - 1][len + 1] = '\0';
 }
 
 void createInvertedIndex(){

@@ -1,9 +1,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 #include <map>
-#include <vector>
 #include <utility>
 
 #define MAXFILENAME 1000
@@ -27,35 +25,9 @@ char words[MAXWORDNUM][MAXWORDLEN];			// wordID => word string
 int maxFreq[MAXFILENUM];					// fileID => maxFreq
 map<int, int> wordCounts[MAXTERMNUM];		// fileID => wordCount
 char terms[MAXTERMNUM][2 * MAXWORDLEN + 1];	// termID => term string
-map<char*, map<int, int>*, cmp_str> inverts;			// term string => wordCounts map
+map<char*, map<int, int>*, cmp_str> inverts;// term string => wordCounts map
+char files[MAXFILENUM][MAXFILENAME]; 		// fileID => filename
 
-
-
-/*
-#define MAXTERNUM 10
-
-typedef struct data{
-	int fileNum;
-	map<int, int> wordCount; //fileID -> count
-} Data;
-
-
-
-map<char*, Data*>::iterator it;
-char files[MAXFILENUM][MAXFILENAME]; //fileID -> fileName
-int fileNum;
-char modelDir[1000];
-
-void printData(Data d){
-	int fileNum = d.fileNum;
-	map<int, int> wordCount = d.wordCount;
-	printf("fileNum = %d\n", fileNum);
-	map<int, int>::iterator mit;
-	for (mit = wordCount.begin(); mit != wordCount.end(); mit++)
-		printf("fileID: %d, count: %d\n", mit->first, mit->second);
-	return;
-}
-*/
 void readVocab(){
 	FILE* f = fopen(vocabFilename, "r");
 	int wordNum = 0;
@@ -94,7 +66,6 @@ void createInverts(){
 			continue;
 		}*/
 
-		//printf("%d, %d, %d\n", vID1, vID2, fileNum);
 		// create wordCounts
 		for (int i = 0; i < fileNum; i++){
 			fscanf(f, "%d %d", &fileID, &count);
@@ -112,7 +83,6 @@ void createInverts(){
 		//printf("%s\n", terms[termNum]);
 		item = make_pair(terms[termNum], &wordCounts[termNum]);
 		inverts.insert(item);
-		//printf("%s\n", item.first);
 		termNum++;
 	}
 	/*
@@ -123,23 +93,24 @@ void createInverts(){
 	*/
 }
 
-/*
 void createFileName(){
-	char fileList[1000];
-	strncpy(fileList, modelDir, 1000);
-	strncat(fileList, "/file-list", 30);
-	FILE* f = fopen(fileList, "r");
-	fileNum = 0;
-	while (fscanf(f, "%s", files[fileNum]) != EOF){
-		for (int i = 0; i < 15; i++)
-			files[fileNum][i] = tolower(files[fileNum][i + 16]);
-		files[fileNum][15] = '\0';
+	FILE* f = fopen(fileListFilename, "r");
+	int fileNum = 0;
+	int len;
+	while (fgets(files[fileNum], MAXFILENAME, f) != NULL){
+		// remove \n
+		len = strlen(files[fileNum]);
+		files[fileNum][len - 1] = '\0';
 		fileNum++;
 	}
+	// fill 'c'
+	len = strlen(files[fileNum - 1]);
+	files[fileNum - 1][len] = 'c';
+	files[fileNum - 1][len + 1] = '\0';
 }
-*/
+
 void createInvertedIndex(){
 	readVocab();
 	createInverts();
-	//createFileName();
+	createFileName();
 }

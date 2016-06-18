@@ -14,6 +14,9 @@ DEVELOPER_KEY = "AIzaSyAAWsdajiwk9v84_ZctzmFbqnmXADVTBxM"
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
 
+result_path='result'
+keyword_path='query'
+
 def time_search(keyword_path, videoid, song_path):
   keyword_list=[]
   key_count=0
@@ -96,8 +99,7 @@ def youtube_search(options):
   return best_url  
 
 if __name__ == "__main__":
-  f = open('result','r')
-  keyword_path='query'
+  f = open(result_path,'r')
 
   #set argparse
   argparser.add_argument("--q", help="Search term", default='')

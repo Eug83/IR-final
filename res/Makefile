@@ -1,3 +1,3 @@
 all:
 	g++ main.cpp -o main
-	./main -f file_list -v vocab -i invIndex -q queryFile
+	./main -f ../data/file_list -v ../data/vocab -i ../data/invIndex -q ../data/queryFile

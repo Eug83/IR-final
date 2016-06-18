@@ -96,8 +96,8 @@ def youtube_search(options):
   return best_url  
 
 if __name__ == "__main__":
-  f = open('search.txt','r')
-  keyword_path='keyword.txt'
+  f = open('result','r')
+  keyword_path='query'
 
   #set argparse
   argparser.add_argument("--q", help="Search term", default='')

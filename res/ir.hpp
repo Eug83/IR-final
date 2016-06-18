@@ -128,6 +128,7 @@ void printResult(set<pair<double, int> >& r){
 		if (top == 0)
 			break;
 		//printf("sim: %f, fileName: %s\n", rsit->first, files[rsit->second]);
+		//printWeight(weights[rsit->second]);
 		printf("%s\n", files[rsit->second]);
 		top--;
 	}

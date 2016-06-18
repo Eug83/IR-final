@@ -1,22 +1,10 @@
 #include <vector>
-
-vector<int> candidates;
-
-
-/*
-#include <stdio.h>
 #include <set>
-#include <stdlib.h>
 #include <math.h>
-
-using namespace std;
-int feedback;
-vector<double>::iterator vit;
+vector<int> candidates;
 int candidateNum;
-Query q;
-FILE* result;
-char resultFilename[1000];
-double weight[MAXFILENUM][MAXTERM];
+int top;
+double weights[MAXFILENUM][MAXQUERYTERMNUM]; // fileID => weight
 
 void printCandidates(){
 	printf("candidates: ");
@@ -26,11 +14,11 @@ void printCandidates(){
 
 void printWeight(double* w){
 	printf("weight: ");
-	for (int i = 0; i < q.termNum; i++)
+	for (int i = 0; i < queryTermNum; i++)
 		printf("%f ", w[i]);
 	puts("");
 }
-*/
+
 void candidatesOr(map<int, int>* wordCount){
 	map<int, int>::iterator mit;
 	vector<int>::iterator vit, tit;
@@ -69,54 +57,51 @@ void findCandidate(){
 		candidatesOr(it->second);
 	}
 }
-/*
-double TF(Data* d, int fileID){
-	map<int, int>::iterator imit = d->wordCount.find(fileID);
-	if (imit == d->wordCount.end())
+
+double TF(map<int, int>* wordCount, int fileID){
+	map<int, int>::iterator mit = wordCount->find(fileID);
+	if (mit == wordCount->end())
 		return 0;
-	//yes, TF exists in wordCount(fileID -> count)
-	double tf = imit->second;
+	// TF exists in wordCount (fileID => count)
+	double tf = mit->second;
 	return 0.5 + 0.5 * tf / maxFreq[fileID];
-	//return tf;
 }
 
-double IDF(Data* d){
-	//printf("%f\n", d->fileNum * 1.0 / candidateNum);
-	return log(MAXFILENUM * 1.0 / d->fileNum);	//candidateNum or total fileNum? log or log10?
+double IDF(map<int, int>* wordCount){
+	// candidateNum or total fileNum? log or log10?
+	return log(MAXFILENUM * 1.0 / wordCount->size());	
 }
 
 void findWeight(int fileID){
-	int termNum = q.termNum;
-	map<char*, Data*>::iterator mit;
-	Data* d;
-	for (int i = 0; i < termNum; i++){
-		mit = inverts.find(q.terms[i]);
-		if (mit == inverts.end()){	//no data in inverts(vocab -> data)
-			weight[fileID][i] = 0;
+	map<char*, map<int, int>*, cmp_str>::iterator mit;
+	for (int i = 0; i < queryTermNum; i++){
+		mit = inverts.find(queryTerms[i]);
+		// no data in inverts
+		if (mit == inverts.end()){	
+			weights[fileID][i] = 0;
 			continue;
 		}
-		d = mit->second;
-		weight[fileID][i] = (TF(d, fileID) * IDF(d));
+		weights[fileID][i] = (TF(mit->second, fileID) * IDF(mit->second));
 	}
-	//printWeight(weight);
 }
+
 double crossSim(int fileID, double* b){
 	double sum = 0;
-	for (int i = 0; i < q.termNum; i++)
-		sum += weight[fileID][i] * b[i];
+	for (int i = 0; i < queryTermNum; i++)
+		sum += weights[fileID][i] * b[i];
 	return sum;
 }
 
 double distSim(double* a, double* b){
 	double sum = 0;
-	for (int i = 0; i < q.termNum; i++)
+	for (int i = 0; i < queryTermNum; i++)
 		sum += (a[i] - b[i]) * (a[i] - b[i]);
 	return sqrt(sum);
 }
 
 double cosSim(double* a, double* b){
 	double up = 0, downL = 0, downR = 0;
-	for (int i = 0; i < q.termNum; i++){
+	for (int i = 0; i < queryTermNum; i++){
 		up += a[i] * b[i];
 		downR += a[i] * a[i];
 		downL += b[i] * b[i];
@@ -124,91 +109,43 @@ double cosSim(double* a, double* b){
 	return up / sqrt(downL * downR);
 }
 
-void makeQueryW(int h, double* w, set<pair<double, int> >& r){
-	int termNum = q.termNum;
-	if (h == 0){
-		int i = 0;
-		map<char*, Data*>::iterator mit;
-		Data* d;
-		for (int i = 0; i < termNum; i++){
-			mit = inverts.find(q.terms[i]);
-			if (mit == inverts.end()){	//no data in inverts(vocab -> data)
-				w[i] = 0;
-				continue;
-			}
-			d = mit->second;
-			w[i] = 1 * IDF(d);
+void makeQueryW(double* w){
+	map<char*, map<int, int>*, cmp_str>::iterator mit;
+	for (int i = 0; i < queryTermNum; i++){
+		mit = inverts.find(queryTerms[i]);
+		// no data in inverts
+		if (mit == inverts.end()){
+			w[i] = 0;
+			continue;
 		}
-	}
-	else {
-		//new query weight
-		double a = 1.0, b = 0.8, c = 0.1;
-		int top = 8;
-		double dj[termNum], dk[termNum], qo[termNum];
-		for (int i = 0; i < termNum; i++){
-			qo[i] = w[i];
-			dj[i] = 0;
-			dk[i] = 0;
-		}
-		int count = 0;
-		set<pair<double, int> >::reverse_iterator rsit;
-		set<pair<double, int> >::iterator sit;
-		for (rsit = r.rbegin(), sit = r.begin();
-		 		rsit != r.rend(), sit != r.end(); rsit++, sit++){
-			for (int i = 0; i < termNum; i++){
-				dj[i] += weight[rsit->second][i];
-				dk[i] += weight[sit->second][i];
-			}
-			count++;
-			if (count == top)
-				break;
-		}
-		for (int i = 0; i < termNum; i++)
-			w[i] = a * qo[i] + b * (1.0 / top) * dj[i] + c * (1.0 / top) * dk[i];
+		w[i] = 1 * IDF(mit->second);
 	}
 }
 
 void printResult(set<pair<double, int> >& r){
-	printf("result: \n");
 	set<pair<double, int> >::reverse_iterator rsit;
-	for (rsit = r.rbegin(); rsit != r.rend(); rsit++)
-		printf("sim: %f, fileName: %s\n", rsit->first, files[rsit->second]);
-	puts("");
-}
-
-void writeResult(set<pair<double, int> >& r){
-	set<pair<double, int> >::reverse_iterator rsit;
-	int count = 0;
 	for (rsit = r.rbegin(); rsit != r.rend(); rsit++){
-		fprintf(result, "%s %s\n", q.id, files[rsit->second]);
-		count++;
-		if (count == 100)
+		if (top == 0)
 			break;
+		//printf("sim: %f, fileName: %s\n", rsit->first, files[rsit->second]);
+		printf("%s\n", files[rsit->second]);
+		top--;
 	}
 }
-*/
+
 void search(){
 	findCandidate();
-	/*
 	candidateNum = candidates.size();
-	int i = 0;
-	double queryW[q.termNum];//how to calc this??
+	double queryW[queryTermNum]; // how to calc this??
 	double sim;
-	set<pair<double, int> > result;	//sim, fileID
+	set<pair<double, int> > result;	// (sim, fileID)
 	pair<double, int> p;
-	for (int h = 0; h < feedback + 1; h++){
-		makeQueryW(h, queryW, result);
-		result.clear();
-		for (int i = 0; i < candidateNum; i++){
-			findWeight(candidates[i]);
-			sim = crossSim(candidates[i], queryW);
-			//printf("candidates %d ", candidates[i]);
-			p = make_pair(sim, candidates[i]);
-			result.insert(p);
-		}
+	makeQueryW(queryW);
+	for (int j = 0; j < candidateNum; j++){
+		findWeight(candidates[j]);
+		sim = crossSim(candidates[j], queryW);
+		p = make_pair(sim, candidates[j]);
+		result.insert(p);
 	}
-
-	//printResult(result);
-	writeResult(result);
-	*/
+	printResult(result);
 }

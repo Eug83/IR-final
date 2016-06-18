@@ -1,6 +1,7 @@
 import urllib.request
 import operator
 import unicodedata
+import sys
 from html.parser import HTMLParser
 
 # Nick's Parser
@@ -108,7 +109,7 @@ def countWord(isUni):
 			else:
 				# add sapce between word and word2 if word2 is English or Digit
 				word = word + word2 if (parser.isChinese(word2[0])) \
-								else word + " " + word2
+									else word + " " + word2
 		# count word
 		if (word in wordCount):
 			wordCount[word] = wordCount[word] + 1
@@ -124,7 +125,7 @@ def getQuery(url, isUni, thres):
 	thres = len(sortedWordCount) if thres > len(sortedWordCount) else thres
 	for i in range(0, thres):
 		(word, count) = sortedWordCount[i]
-		print("word:", word, "count:", count)
+		print(word)
 	# list = makeQueryList()
 	# return list
 
@@ -139,10 +140,10 @@ if __name__ == '__main__':
 	Return:
 		A list of key words in string
 	'''
+	arg = sys.argv
+	getQuery(arg[1], False, int(arg[2]))
 	# JP food
 	#getQuery("http://hsing16.pixnet.net/blog/post/33292894", False, 20)
-	# steak
-	getQuery("http://hsing16.pixnet.net/blog/post/32270925", False, 20)
 	# make notebook
 	#getQuery("http://travelmous2013.pixnet.net/blog/post/411878827")
 	# for testing other webpage

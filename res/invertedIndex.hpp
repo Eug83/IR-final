@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include <map>
 #include <utility>
 
@@ -9,7 +10,7 @@
 #define MAXWORDLEN 20
 #define MAXTERMLEN 2*MAXWORDLEN+1
 #define MAXFILENUM 30000
-#define MAXTERMNUM 1100000 // this should be checked
+#define MAXTERMNUM 80000
 
 using namespace std;
 
@@ -46,20 +47,25 @@ void createInverts(){
 	for (int i = 0; i < MAXFILENUM; i++)
 		maxFreq[i] = 0;
 	// create inverted index
+	int lineNum = 0;
 	while (fscanf(f, "%d %d %d", &vID1, &vID2, &fileNum) != EOF){
+		lineNum++;
 		// create wordCounts
 		for (int i = 0; i < fileNum; i++){
 			fscanf(f, "%d %d", &fileID, &count);
+			lineNum++;
 			maxFreq[fileID] = count > maxFreq[fileID] ? count : maxFreq[fileID];
 			p = make_pair(fileID, count);
 			wordCounts[termNum].insert(p);
 		}
 		// create terms
 		strncpy(terms[termNum], words[vID1], strlen(words[vID1]));
-		if (vID2 != -1)
-		// TODO: vID2 is English?
+		if (vID2 != -1){
+			// add space if word2 is English or Digit
+			if (isalpha(words[vID2][0]) || isdigit(words[vID2][0]))
+				strcat(terms[termNum], " ");
 			strncat(terms[termNum], words[vID2], strlen(words[vID2]));
-
+		}
 		item = make_pair(terms[termNum], &wordCounts[termNum]);
 		inverts.insert(item);
 		termNum++;

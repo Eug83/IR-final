@@ -2,13 +2,15 @@ import os
 import sys
 import time
 
-dataPath='./lrcc'
-vocab='vocab'
-invIndex='invIndex'
-fileListPath='./file_list'
+dataPath='../data/lrcc'
+vocab='../data/vocab'
+invIndex='../data/invIndex'
+fileListPath='../data/file_list'
 term_dict=dict()
 termOccur_dict=dict()
+totalTermCount=0
 bitermOccur_dict=dict()
+totalBitermCount=0
 invInd_dict=dict()
 biInvInd_dict=dict()
 term_list=[]
@@ -33,7 +35,7 @@ def read_filelist():
 
 def check_term(f,lastWord,s,termCount):
 
-	global term_dict,term_list,invInd_dict,biInvInd_dict,termOccur_dict,bitermOccur_dict
+	global term_dict,term_list,invInd_dict,biInvInd_dict,termOccur_dict,totalTermCount,bitermOccur_dict,totalBitermCount
 
 	if s not in term_dict:
 		term_dict[s]=termCount
@@ -60,7 +62,8 @@ def check_term(f,lastWord,s,termCount):
 			biInvInd_dict[hashBigramId][f]=1
 		else:
 			biInvInd_dict[hashBigramId][f] += 1
-			
+	totalTermCount += 1
+	totalBitermCount += 1
 
 	return termCount
 
@@ -135,26 +138,27 @@ def build():
 	return
 
 
-def write_file(thres):
+def write_file():
 
 	global dataPath,vocab,invIndex,term_dict,invInd_dict,biInvInd_dict,term_list,file_dict,file_list,termOccur_dict,bitermOccur_dict
-	
+	global totalTermCount,totalBitermCount
+
+	totalFileNum=len(file_list)
 	with open(vocab,'w',encoding='utf8') as fp:
 		for x in term_list:
-			if termOccur_dict[x] >= thres:
-				fp.write('%s\n' % (x))
+			fp.write('%s\n' % (x))
 
 	with open(invIndex,'w',encoding='utf8') as fp:
 		for term in term_list:
-			if termOccur_dict[term] < thres:
+			if len(invInd_dict[term]) > int(0.4*float(len(file_list))) or termOccur_dict[term] < 10:
 				continue
 			fp.write('%d -1 %d\n' % (term_dict[term],len(invInd_dict[term])))
 			for key in invInd_dict[term]:
 				fp.write('%d %d\n' % (file_dict[key],invInd_dict[term][key]))
 		for key in biInvInd_dict:
-			if bitermOccur_dict[key] < thres:
+			if len(biInvInd_dict[key]) > int(0.4*float(len(file_list))) or bitermOccur_dict[key] < 10:
 				continue
-			fp.write('%d %d %d\n' % (int(key[0:5]),int(key[6:11]),len(biInvInd_dict[key])))
+			fp.write('%d %d %d\n' % (term_dict[term_list[int(key[0:6])]],term_dict[term_list[int(key[6:12])]],len(biInvInd_dict[key])))
 			for f in biInvInd_dict[key]:
 				fp.write('%d %d\n' % (file_dict[f],biInvInd_dict[key][f]))
 
@@ -162,7 +166,6 @@ def write_file(thres):
 
 
 def main():
-	THRES=10
 
 	print('Start processing...')
 	startTime=time.time()
@@ -171,7 +174,7 @@ def main():
 	print('Finish reading in %s seconds' % (time.time()-startTime))
 	build()
 	print('Finish building in %s seconds' % (time.time()-startTime))
-	write_file(THRES)
+	write_file()
 	print('Finish processing in %s seconds' % (time.time()-startTime))
 
 	return

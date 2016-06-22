@@ -14,8 +14,8 @@ DEVELOPER_KEY = "AIzaSyAAWsdajiwk9v84_ZctzmFbqnmXADVTBxM"
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
 
-result_path='result'
-keyword_path='query'
+result_path='../data/result'
+keyword_path='../data/query'
 
 def time_search(keyword_path, videoid, song_path):
   keyword_list=[]
@@ -139,7 +139,7 @@ if __name__ == "__main__":
     #modify path for windows    
     #song_path=song_path.replace('/', '\\')
  
-    time_search(keyword_path, videoid, "lrcc"+song_path)
+    time_search(keyword_path, videoid, "../data/lrcc"+song_path)
 
   else:
     print("not found")

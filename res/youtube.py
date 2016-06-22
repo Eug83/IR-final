@@ -50,7 +50,25 @@ def time_search(keyword_path, videoid, song_path):
 
   return
 
-
+def check_title(title, query_list):
+  if query_list[0] in title and query_list[1] in title:
+    return 1
+  else:
+    song_count=0
+    name_count=0
+    #song name
+    for word in query_list[1]:
+      if word in title:
+        song_count=song_count+1
+    if song_count/len(query_list[1])<0.7:
+      return 0
+    #singer name
+    for word in query_list[0]:
+      if word in title:
+        name_count=name_count+1
+    if name_count/len(query_list[0])<0.5:
+      return 0
+  return 1
 
 def youtube_search(options):
   youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
@@ -68,35 +86,15 @@ def youtube_search(options):
 
   # Add each result to the appropriate list, and then display the lists of
   # matching videos, channels, and playlists.
-  best_result=3
-  best_url='not found'
+  novideo='not found'
   for search_result in search_response.get("items", []):
     if search_result["id"]["kind"] == "youtube#video":
-      #videos.append("%s (%s)" % (search_result["snippet"]["title"],search_result["id"]["videoId"]))  
-      title=search_result["snippet"]["title"].lower()
-      #if options.q[0] in title and options.q[1] in title:
-      #  best_url=search_result["id"]["videoId"]
-      #print ("%s" %title)
-      if options.q[0] not in title or (options.q[1] not in title):
-        tmp_result=3
-      else:        
-        #if 'mv' in title:
-        #  tmp_result=1
-        #elif 'music video' in title:
-        #  tmp_result=1
-        #else:
-       
-        tmp_result=0
-     
-      if tmp_result < best_result:
-        best_url=search_result["id"]["videoId"]
-        best_result=tmp_result
-
-    #find result with singer and song name, no mv...
-      if tmp_result==0:
-        break
+      if check_title(search_result["snippet"]["title"].lower(), options.q)==1:
+        return search_result["id"]["videoId"]
+      else:
+        continue
       
-  return best_url  
+  return novideo  
 
 if __name__ == "__main__":
   f = open(result_path,'r')

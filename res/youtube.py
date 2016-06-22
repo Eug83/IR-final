@@ -20,7 +20,7 @@ keyword_path='../data/query'
 def time_search(keyword_path, videoid, song_path):
   keyword_list=[]
   key_count=0
-  with open(keyword_path,'r', encoding='big5') as keyword_f:
+  with open(keyword_path,'r', encoding='utf8') as keyword_f:
     for word in keyword_f:
       word=word.rstrip('\n')
       keyword_list.append(word)
@@ -97,7 +97,7 @@ def youtube_search(options):
   return novideo  
 
 if __name__ == "__main__":
-  f = open(result_path,'r')
+  f = open(result_path,'r', encoding='utf8')
 
   #set argparse
   argparser.add_argument("--q", help="Search term", default='')

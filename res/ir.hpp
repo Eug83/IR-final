@@ -118,7 +118,7 @@ void makeQueryW(double* w){
 			w[i] = 0;
 			continue;
 		}
-		w[i] = 1 * IDF(mit->second);
+		w[i] = 1 * IDF(mit->second) * (queryTermNum - i) / queryTermNum * 1.0;
 	}
 }
 

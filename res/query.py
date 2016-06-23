@@ -48,8 +48,7 @@ class NParser(HTMLParser):
 		parsedData = self._parsedData;
 		# remove punc
 		for word in parsedData:
-			if (not (self.isChinese(word) or 
-					self.isDigit(word) or self.isAlpha(word))):
+			if (not (self.isChinese(word) or self.isAlpha(word))):
 				parsedData = parsedData.replace(word, " ")
 		return parsedData
 

@@ -74,7 +74,7 @@ def check_title(title, query_list):
       title_len=title_len-3
     elif 'audio' in title:
       title_len=title_len-5
-    if song_count/title_len<0.01:
+    if song_count/title_len<0.3:
       return 0
     #singer name
     for word in query_list[0]:

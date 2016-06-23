@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import webbrowser
+
 from apiclient.discovery import build
 from apiclient.errors import HttpError
 from oauth2client.tools import argparser
@@ -13,13 +14,13 @@ DEVELOPER_KEY = "AIzaSyAAWsdajiwk9v84_ZctzmFbqnmXADVTBxM"
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
 
-result_path='../data/result'
-keyword_path='../data/query'
+result_path='search.txt'
+keyword_path='keyword.txt'
 
 def time_search(keyword_path, videoid, song_path):
   keyword_list=[]
   key_count=0
-  with open(keyword_path,'r', encoding='utf8') as keyword_f:
+  with open(keyword_path,'r', encoding='big5') as keyword_f:
     for word in keyword_f:
       word=word.rstrip('\n')
       keyword_list.append(word)
@@ -57,14 +58,29 @@ def check_title(title, query_list):
     name_count=0
     #song name
     for word in query_list[1]:
+      #singer name is english
+      #if (word >= u'\u0041' and word <= u'\u005a')or(word >= u'\u0061' and word <= u'\u007a'):
       if word in title:
         song_count=song_count+1
-    if song_count/len(query_list[1])<0.7:
+   # print ("%d %d" % (song_count, len(query_list[1])))
+    title_len=len(title)
+    if 'music' in title:
+      title_len=title_len-5
+    elif 'mv' in title:
+      title_len=title_len-2
+    elif 'video' in title:
+      title_len=title_len-5
+    elif 'mp3' in title:
+      title_len=title_len-3
+    elif 'audio' in title:
+      title_len=title_len-5
+    if song_count/title_len<0.7:
       return 0
     #singer name
     for word in query_list[0]:
       if word in title:
         name_count=name_count+1
+    #print ("%d %d" % (name_count, len(query_list[0])))
     if name_count/len(query_list[0])<0.5:
       return 0
   return 1
@@ -96,15 +112,13 @@ def youtube_search(options):
   return novideo  
 
 if __name__ == "__main__":
-
-  f = open(result_path,'r', encoding='utf8')
+  f = open(result_path,'r')
 
   #set argparse
   argparser.add_argument("--q", help="Search term", default='')
   argparser.add_argument("--max-results", help="Max results", default=25)
-  argparser.add_argument("-t", action="store_true")
   args = argparser.parse_args()
-  timeSearch = args.t
+
   #while loop until proper video is found
   find_song=0
   count=0
@@ -136,11 +150,9 @@ if __name__ == "__main__":
   if find_song==1:
   
     #modify path for windows    
-    #song_path=song_path.replace('/', '\\')
-    if (timeSearch):
-      time_search(keyword_path, videoid, "../data/lrcc"+song_path)
-    else:
-      webbrowser.open(videoid)
+    song_path=song_path.replace('/', '\\')
+ 
+    time_search(keyword_path, videoid, "lrcc"+song_path)
 
   else:
     print("not found")

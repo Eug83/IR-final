@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import webbrowser
+import os
 
 from apiclient.discovery import build
 from apiclient.errors import HttpError
@@ -112,50 +113,54 @@ def youtube_search(options):
   return novideo  
 
 if __name__ == "__main__":
-  f = open(result_path,'r',encoding='utf8')
-
-  #set argparse
-  argparser.add_argument("--q", help="Search term", default='')
-  argparser.add_argument("--max-results", help="Max results", default=25)
-  argparser.add_argument("-t", action="store_true")
-
-  args = argparser.parse_args()
-  timeSearch = args.t
-  #while loop until proper video is found
-  find_song=0
-  count=0
-  while find_song==0 and count<10:
-    search_var=f.readline()
-    song_path=search_var.rstrip('\n')
-    #get singer and song name
-    #search_var is a list, search[0]=singer, search_var[1]=song name
-    search_var=search_var.rstrip('.lrc\n')
-    search_var=search_var.split('/')
-    if len(search_var) > 2:
-      length=len(search_var)
-      search_var=search_var[length-2:length]
-
-    #search by keyword
-    args.q=search_var
-    try:
-      videoid=youtube_search(args)
-      #check if video is found
-      if videoid != "not found":
-        videoid='https://www.youtube.com/watch?v='+videoid 
-        find_song=1
-        break
-
-    except HttpError as e:
-      print ("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
- 
-  #get lrc time and combine url with time
-  if find_song==1:
-  
-    #modify path for windows    
-    #song_path=song_path.replace('/', '\\')
-    if timeSearch:
-      time_search(keyword_path, videoid, "../data/lrcc"+song_path)
-    else:
-      webbrowser.open(videoid)
+  statinfo = os.stat(result_path)
+  if statinfo.st_size==0:
+    webbrowser.open("https://www.youtube.com/watch?v=7g58WySGo7E")
   else:
-    print("not found")
+    f = open(result_path,'r',encoding='utf8')
+
+    #set argparse
+    argparser.add_argument("--q", help="Search term", default='')
+    argparser.add_argument("--max-results", help="Max results", default=25)
+    argparser.add_argument("-t", action="store_true")
+
+    args = argparser.parse_args()
+    timeSearch = args.t
+    #while loop until proper video is found
+    find_song=0
+    count=0
+    while find_song==0 and count<10:
+      search_var=f.readline()
+      song_path=search_var.rstrip('\n')
+      #get singer and song name
+      #search_var is a list, search[0]=singer, search_var[1]=song name
+      search_var=search_var.rstrip('.lrc\n')
+      search_var=search_var.split('/')
+      if len(search_var) > 2:
+        length=len(search_var)
+        search_var=search_var[length-2:length]
+
+      #search by keyword
+      args.q=search_var
+      try:
+        videoid=youtube_search(args)
+        #check if video is found
+        if videoid != "not found":
+          videoid='https://www.youtube.com/watch?v='+videoid 
+          find_song=1
+          break
+
+      except HttpError as e:
+        print ("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
+ 
+    #get lrc time and combine url with time
+    if find_song==1:
+  
+      #modify path for windows    
+      #song_path=song_path.replace('/', '\\')
+      if timeSearch:
+        time_search(keyword_path, videoid, "../data/lrcc"+song_path)
+      else:
+        webbrowser.open(videoid)
+    else:
+      print("not found")

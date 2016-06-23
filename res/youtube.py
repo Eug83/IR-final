@@ -26,8 +26,6 @@ def time_search(keyword_path, videoid, song_path):
       word=word.rstrip('\n')
       keyword_list.append(word)
       key_count = key_count+1
-  if ("National Taiwan" in keyword_list):
-      webbrowser.open("https://youtu.be/Ev4pwFMaZQc?t=35s")
   #print ("%s" % keyword_list)
   with open(song_path,'r', encoding='big5') as song_f:
     find_word=0

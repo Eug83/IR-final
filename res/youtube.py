@@ -96,15 +96,15 @@ def youtube_search(options):
   return novideo  
 
 if __name__ == "__main__":
-  timeSearch = False
 
   f = open(result_path,'r', encoding='utf8')
 
   #set argparse
   argparser.add_argument("--q", help="Search term", default='')
   argparser.add_argument("--max-results", help="Max results", default=25)
+  argparser.add_argument("-t", action="store_true")
   args = argparser.parse_args()
-
+  timeSearch = args.t
   #while loop until proper video is found
   find_song=0
   count=0
@@ -137,10 +137,10 @@ if __name__ == "__main__":
   
     #modify path for windows    
     #song_path=song_path.replace('/', '\\')
-    if (not timeSearch):
-      webbrowser.open(videoid)
-    else:
+    if (timeSearch):
       time_search(keyword_path, videoid, "../data/lrcc"+song_path)
+    else:
+      webbrowser.open(videoid)
 
   else:
     print("not found")

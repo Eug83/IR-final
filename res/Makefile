@@ -6,4 +6,4 @@ all:
 	g++ main.cpp -o main
 	python3 query.py ${URL} 20 > ../data/query
 	./main -f ../data/file_list -v ../data/vocab -i ../data/invIndex -q ../data/query -t 15 > ../data/result
-	python3 youtube.py
+	python3 youtube.py -t

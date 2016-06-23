@@ -1,8 +1,12 @@
+build ?= n
 all:
 	@# query.py usage: python3 query.py url queryTermNum
 	@# main program usage: ./main -f file_list -v vocab -i invIndex -q query -t topResult
-	#python3 file.py ../data/lrcc
-
+#make build='y' can rebuild database
+ifeq ($(build),y)	
+	python3 file.py ../data/lrcc
+	python3 build_term.py
+endif
 	#make URL="..."
 	g++ main.cpp -o main
 	python3 query.py ${URL} 20 > ../data/query

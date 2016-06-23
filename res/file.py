@@ -9,8 +9,8 @@ for dirPath, dirName, files in os.walk(sys.argv[1]):
 	for file in files:
 		if file.endswith(".lrc"):
 			tmp = os.path.join(dirPath, file)
-			tmp2 = tmp[4:len(tmp)]
-			#file_name = tmp2.replace('\\',"/")
+		        file_name = tmp[4:len(tmp)]
+			#file_name = file_name.replace('\\',"/")
 			f.write("%s\n" % (file_name))
 
 f.close

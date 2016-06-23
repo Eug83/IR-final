@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import webbrowser
-
 from apiclient.discovery import build
 from apiclient.errors import HttpError
 from oauth2client.tools import argparser
@@ -97,6 +96,8 @@ def youtube_search(options):
   return novideo  
 
 if __name__ == "__main__":
+  timeSearch = False
+
   f = open(result_path,'r', encoding='utf8')
 
   #set argparse
@@ -136,8 +137,10 @@ if __name__ == "__main__":
   
     #modify path for windows    
     #song_path=song_path.replace('/', '\\')
- 
-    time_search(keyword_path, videoid, "../data/lrcc"+song_path)
+    if (not timeSearch):
+      webbrowser.open(videoid)
+    else:
+      time_search(keyword_path, videoid, "../data/lrcc"+song_path)
 
   else:
     print("not found")

@@ -1,6 +1,7 @@
 all:
 	@# query.py usage: python3 query.py url queryTermNum
 	@# main program usage: ./main -f file_list -v vocab -i invIndex -q query -t topResult
+	#python3 file.py ../data/lrcc
 
 	#make URL="..."
 	g++ main.cpp -o main

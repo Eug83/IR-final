@@ -9,7 +9,8 @@ class NParser(HTMLParser):
 	_parsedData = ""
 	_tagRemain = 0
 	_tagWeWant = ["p", "title"]
-
+	_title_done = False
+	_titleWeight = 0
 	def handle_starttag(self, tag, attrs):
 		if (tag in self._tagWeWant):
 			self._tagRemain = self._tagRemain + 1
@@ -30,8 +31,11 @@ class NParser(HTMLParser):
 				byte = byte.replace(r, b' ')
 			data = byte.decode("utf-8")
 			# title can have a high weight
-			if ("title" in self.get_starttag_text()):
+			if ("title" in self.get_starttag_text() and \
+							not self._title_done):
 				# do something
+				self._parsedData = self._parsedData + data * self._titleWeight
+				self._title_done = True
 				return
 			self._parsedData = self._parsedData + data
 

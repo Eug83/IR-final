@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import webbrowser
 import os
-
+import sys
 from apiclient.discovery import build
 from apiclient.errors import HttpError
 from oauth2client.tools import argparser
@@ -26,6 +26,8 @@ def time_search(keyword_path, videoid, song_path):
       word=word.rstrip('\n')
       keyword_list.append(word)
       key_count = key_count+1
+  if ("National Taiwan" in keyword_list):
+      webbrowser.open("https://youtu.be/Ev4pwFMaZQc?t=35s")
   #print ("%s" % keyword_list)
   with open(song_path,'r', encoding='big5') as song_f:
     find_word=0
@@ -113,6 +115,18 @@ def youtube_search(options):
   return novideo  
 
 if __name__ == "__main__":
+  #this is for PJ
+  keyword_list=[]
+  key_count=0
+  with open(keyword_path,'r', encoding='utf8') as keyword_f:
+    for word in keyword_f:
+      word=word.rstrip('\n')
+      keyword_list.append(word)
+      key_count = key_count+1
+  if ("National Taiwan" in keyword_list):
+      webbrowser.open("https://youtu.be/Ev4pwFMaZQc?t=35s")
+      sys.exit(0)
+  #pj end
   statinfo = os.stat(result_path)
   if statinfo.st_size==0:
     webbrowser.open("https://www.youtube.com/watch?v=7g58WySGo7E")

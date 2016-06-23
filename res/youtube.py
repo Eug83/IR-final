@@ -20,7 +20,7 @@ keyword_path='../data/query'
 def time_search(keyword_path, videoid, song_path):
   keyword_list=[]
   key_count=0
-  with open(keyword_path,'r', encoding='big5') as keyword_f:
+  with open(keyword_path,'r', encoding='utf8') as keyword_f:
     for word in keyword_f:
       word=word.rstrip('\n')
       keyword_list.append(word)
@@ -74,7 +74,7 @@ def check_title(title, query_list):
       title_len=title_len-3
     elif 'audio' in title:
       title_len=title_len-5
-    if song_count/title_len<0.7:
+    if song_count/title_len<0.01:
       return 0
     #singer name
     for word in query_list[0]:
@@ -112,13 +112,15 @@ def youtube_search(options):
   return novideo  
 
 if __name__ == "__main__":
-  f = open(result_path,'r')
+  f = open(result_path,'r',encoding='utf8')
 
   #set argparse
   argparser.add_argument("--q", help="Search term", default='')
   argparser.add_argument("--max-results", help="Max results", default=25)
-  args = argparser.parse_args()
+  argparser.add_argument("-t", action="store_true")
 
+  args = argparser.parse_args()
+  timeSearch = args.t
   #while loop until proper video is found
   find_song=0
   count=0
@@ -151,8 +153,9 @@ if __name__ == "__main__":
   
     #modify path for windows    
     #song_path=song_path.replace('/', '\\')
- 
-    time_search(keyword_path, videoid, "../data/lrcc"+song_path)
-
+    if timeSearch:
+      time_search(keyword_path, videoid, "../data/lrcc"+song_path)
+    else:
+      webbrowser.open(videoid)
   else:
     print("not found")

@@ -80,7 +80,7 @@ def getWord():
 	while word == " ":
 		index = index + 1
 		if (index >= len(content)):
-			return ""
+			return word
 		word = content[index]
 	# create word
 	if (parser.isChinese(word)):
